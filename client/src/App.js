@@ -52,14 +52,15 @@ const registrarDatos = async (e) => {
             });
 
             if(response.ok){
-              const nuevosRegistros = [...registros]; //copiamos el array actual de registros
-              //reemplazamos el objeto en la posicion editada con los nuevos valores
-              nuevosRegistros[editIndex] = { ...empleado, nombre, edad, pais, cargo, anios };
-              setEditIndex(null); //salimos del modo edicion
-              alert('Empleado actualizado correctamente');
-              } else {
-                  alert('Error al actualizar el empleado');
-              }
+                const nuevosRegistros = [...registros]; //copiamos el array actual de registros
+                //reemplazamos el objeto en la posicion editada con los nuevos valores
+                nuevosRegistros[editIndex] = { ...empleado, nombre, edad, pais, cargo, anios };
+                setRegistros(nuevosRegistros); // Actualiza el estado
+                setEditIndex(null); //salimos del modo edicion
+                alert('Empleado actualizado correctamente');
+                } else {
+                    alert('Error al actualizar el empleado');
+                }
                 
         } catch (error) {
           alert('Error de conexion al actualizar');
@@ -91,4 +92,199 @@ const registrarDatos = async (e) => {
     setPais('');
 }
 
+const eliminarRegistro = async (idx) => {
+    const empleado = registros[idx];
+
+    try {
+        const response = await fetch(`http://localhost:3001/empleados/${empleado.id}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            setRegistros(registros.filter((_, i) => i !== idx));
+            if (editIndex == idx) {
+                setEditIndex(null);
+                setNombre("");
+                setEdad(0);
+                setPais("");
+                setCargo("");
+                setAnios(0);
+            }
+            alert('Empleado eliminado correctamente');
+        } else {
+            alert('Error al eliminar el empleado');
+        }
+    } catch (error) {
+        alert('Error de conexion al eliminar');
+    }
 }
+
+const editarRegistro = (idx) => {
+    const reg = registros[idx];
+    setNombre(reg.nombre);
+    setEdad(reg.edad);
+    setPais(reg.pais);
+    setCargo(reg.cargo);
+    setAnios(reg.anios);
+    setEditIndex(idx);
+};
+
+const cancelarEdicion = () => {
+    setEditIndex(null);
+    setNombre("");
+    setEdad(0);
+    setPais("");
+    setCargo("");
+    setAnios(0);
+  };
+
+  return (
+    <div className="app">
+      <header className="header">
+        <h1>Sistema de Gestión de Empleados</h1>
+      </header>
+
+      <div className="main-container">
+        {/* Formulario */}
+        <div className="form-container">
+          <h2 style={{color: '#ff0000', marginBottom: '1.5rem', textAlign: 'center'}}>
+            {editIndex !== null ? 'Editar Empleado' : 'Registrar Nuevo Empleado'}
+          </h2>
+          <form onSubmit={registrarDatos}>
+            <div className="form-group">
+              <label htmlFor="nombre">Nombre Completo</label>
+              <input
+                type="text"
+                id="nombre"
+                className="form-control"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="edad">Edad</label>
+              <input
+                type="number"
+                id="edad"
+                className="form-control"
+                value={edad}
+                onChange={(e) => setEdad(parseInt(e.target.value))}
+                required
+                min="18"
+                max="65"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="pais">País</label>
+              <input
+                type="text"
+                id="pais"
+                className="form-control"
+                value={pais}
+                onChange={(e) => setPais(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="cargo">Cargo</label>
+              <input
+                type="text"
+                id="cargo"
+                className="form-control"
+                value={cargo}
+                onChange={(e) => setCargo(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="anios">Años de Experiencia</label>
+              <input
+                type="number"
+                id="anios"
+                className="form-control"
+                value={anios}
+                onChange={(e) => setAnios(parseInt(e.target.value))}
+                required
+                min="0"
+                max="50"
+              />
+            </div>
+
+            <div className="btn-group">
+              <button type="submit" className="btn btn-primary">
+                {editIndex !== null ? 'Actualizar' : 'Registrar'}
+              </button>
+              {editIndex !== null && (
+                <button type="button" className="btn btn-secondary" onClick={cancelarEdicion}>
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Tabla de empleados */}
+        <div className="table-container">
+          <h2 style={{color: '#ff0000', marginBottom: '1rem', textAlign: 'center', padding: '1rem'}}>
+            Lista de Empleados
+          </h2>
+          {registros.length === 0 ? (
+            <div className="empty-state">
+              <h3>No hay empleados registrados</h3>
+              <p>Comienza agregando el primer empleado usando el formulario</p>
+            </div>
+          ) : (
+            <table className="employees-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Edad</th>
+                  <th>País</th>
+                  <th>Cargo</th>
+                  <th>Experiencia</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registros.map((registro, idx) => (
+                  <tr key={idx}>
+                    <td>{registro.nombre}</td>
+                    <td>{registro.edad} años</td>
+                    <td>{registro.pais}</td>
+                    <td>{registro.cargo}</td>
+                    <td>{registro.anios} años</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button 
+                          type="button" 
+                          className="btn-sm btn-edit"
+                          onClick={() => editarRegistro(idx)}
+                        >
+                          Editar
+                        </button>
+                        <button 
+                          type="button" 
+                          className="btn-sm btn-delete"
+                          onClick={() => eliminarRegistro(idx)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+}
+
+export default App;
