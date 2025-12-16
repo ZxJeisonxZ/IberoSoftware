@@ -28,11 +28,11 @@ app.get('/empleados', (req, res) => {
 });
 
 app.post('/empleados', (req, res) => {
-    const { nombre, edad, pais, cargo, anios } = req.body;
+    const { nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario } = req.body;
 
-    const sql = 'INSERT INTO empleados (nombre, edad, pais, cargo, anios) VALUES (?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO empleados (nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
-    db.query(sql, [nombre, edad, pais, cargo, anios], (err, result) => {
+    db.query(sql, [nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario], (err, result) => {
         if (err) {
             return res
                 .status(500)
@@ -47,17 +47,20 @@ app.post('/empleados', (req, res) => {
             pais,
             cargo,
             anios,
+            email,
+            fecha_nacimiento,
+            salario,
         });
     });
 });
 
 app.put('/empleados/:id', (req, res) => {
     const { id } = req.params;
-    const { nombre, edad, pais, cargo, anios } = req.body;
+    const { nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario } = req.body;
 
-    const sql = 'UPDATE empleados SET nombre=?, edad=?, pais=?, cargo=?, anios=? WHERE id=?';
+    const sql = 'UPDATE empleados SET nombre=?, edad=?, pais=?, cargo=?, anios=?, email=?, fecha_nacimiento=?, salario=? WHERE id=?';
 
-    db.query(sql, [nombre, edad, pais, cargo, anios, id], (err) => {
+   db.query(sql, [nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario, id], (err) => {
         if (err) {
             return res
                 .status(500)

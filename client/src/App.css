@@ -134,12 +134,14 @@ body {
   background: #1a1a1a;
   border-radius: 10px;
   overflow: hidden;
+  overflow-x: auto;
   border: 1px solid #2a2a2a;
   box-shadow: 0 4px 6px rgba(255, 0, 0, 0.1);
 }
 
 .employees-table {
   width: 100%;
+  min-width: 1200px;
   border-collapse: collapse;
 }
 

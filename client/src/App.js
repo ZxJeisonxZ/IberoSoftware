@@ -12,6 +12,9 @@ const [edad, setEdad] = useState(0);
 const [pais, setPais] = useState("");
 const [cargo, setCargo] = useState("");
 const [anios, setAnios] = useState(0);
+const [email, setEmail] = useState("");
+const [fecha_nacimiento, setFechaNacimiento] = useState("");
+const [salario, setSalario] = useState(0);
 
 //lista que contenga todos los empleados que se registren
 const [registros, setRegistros] = useState([]);
@@ -48,13 +51,13 @@ const registrarDatos = async (e) => {
             const response = await fetch(`http://localhost:3001/empleados/${empleado.id}`, {
                 method: 'PUT', //metodo HTTP para actualizar
                 headers: {'Content-Type': 'application/json'}, //indicamos que enviamos en formato JSON
-                body: JSON.stringify({ nombre, edad, pais, cargo, anios })
+                body: JSON.stringify({ nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario })
             });
 
             if(response.ok){
                 const nuevosRegistros = [...registros]; //copiamos el array actual de registros
                 //reemplazamos el objeto en la posicion editada con los nuevos valores
-                nuevosRegistros[editIndex] = { ...empleado, nombre, edad, pais, cargo, anios };
+                nuevosRegistros[editIndex] = { ...empleado, nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario };
                 setRegistros(nuevosRegistros); // Actualiza el estado
                 setEditIndex(null); //salimos del modo edicion
                 alert('Empleado actualizado correctamente');
@@ -71,7 +74,7 @@ const registrarDatos = async (e) => {
           const response = await fetch('http://localhost:3001/empleados', {
               method: 'POST', //metodo HTTP para agregar
               headers: { 'Content-Type': 'application/json' }, //indicamos que enviamos en formato JSON
-              body: JSON.stringify({ nombre, edad, pais, cargo, anios })
+              body: JSON.stringify({ nombre, edad, pais, cargo, anios, email, fecha_nacimiento, salario })
           });
           const data = await response.json();
           if (response.ok) {
@@ -90,6 +93,9 @@ const registrarDatos = async (e) => {
     setEdad(0);
     setNombre('');
     setPais('');
+    setEmail('');
+    setFechaNacimiento('');
+    setSalario(0);
 }
 
 const eliminarRegistro = async (idx) => {
@@ -108,6 +114,9 @@ const eliminarRegistro = async (idx) => {
                 setPais("");
                 setCargo("");
                 setAnios(0);
+                setEmail("");
+                setFechaNacimiento("");
+                setSalario(0);
             }
             alert('Empleado eliminado correctamente');
         } else {
@@ -125,6 +134,9 @@ const editarRegistro = (idx) => {
     setPais(reg.pais);
     setCargo(reg.cargo);
     setAnios(reg.anios);
+    setEmail(reg.email);
+    setFechaNacimiento(reg.fecha_nacimiento);
+    setSalario(reg.salario);
     setEditIndex(idx);
 };
 
@@ -135,6 +147,9 @@ const cancelarEdicion = () => {
     setPais("");
     setCargo("");
     setAnios(0);
+    setEmail("");
+    setFechaNacimiento("");
+    setSalario(0);
   };
 
   return (
@@ -214,6 +229,43 @@ const cancelarEdicion = () => {
               />
             </div>
 
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="fecha_nacimiento"
+                className="form-control"
+                value={fecha_nacimiento}
+                onChange={(e) => setFechaNacimiento(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="salario">Salario</label>
+              <input
+                type="number"
+                id="salario"
+                className="form-control"
+                value={salario}
+                onChange={(e) => setSalario(parseInt(e.target.value))}
+                required
+                min="0"
+              />
+            </div>
+
             <div className="btn-group">
               <button type="submit" className="btn btn-primary">
                 {editIndex !== null ? 'Actualizar' : 'Registrar'}
@@ -246,6 +298,9 @@ const cancelarEdicion = () => {
                   <th>País</th>
                   <th>Cargo</th>
                   <th>Experiencia</th>
+                  <th>Email</th>
+                  <th>Fecha Nacimiento</th>
+                  <th>Salario</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -257,6 +312,9 @@ const cancelarEdicion = () => {
                     <td>{registro.pais}</td>
                     <td>{registro.cargo}</td>
                     <td>{registro.anios} años</td>
+                    <td>{registro.email}</td>
+                    <td>{registro.fecha_nacimiento}</td>
+                    <td>${registro.salario}</td>
                     <td>
                       <div className="action-buttons">
                         <button 
